@@ -1945,11 +1945,16 @@ These boards should work but I don't test them as often:
 
 **Tier 3: May work, but not supported**
 
-* Any platform using the ArduinoCore-API
-  (https://github.com/arduino/ArduinoCore-api).
-    * For example, Nano Every, MKRZero, and Raspberry Pi Pico RP2040.
-    * Most of my libraries do not work on platforms using the ArduinoCore-API.
-    * However AceButton is simple enough that it may still work on these boards.
+* Any platform using the
+  [ArduinoCore-API](https://github.com/arduino/ArduinoCore-api). For example:
+    * Arduino Nano Every
+    * Arduino MKRZero
+    * Arduino UNO R4
+    * Raspberry Pi Pico RP2040
+
+Most of my libraries are *not* compatible with the ArduinoCore-API. However
+AceButton is an exception because it is simple enough that it may still work on
+these boards.
 
 <a name="ToolChain"></a>
 ### Tool Chain
