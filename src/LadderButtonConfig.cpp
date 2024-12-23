@@ -22,8 +22,8 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#include "LadderButtonConfig.h"
-#include "AceButton.h"
+#include "include/LadderButtonConfig.h"
+#include "include/AceButton.h"
 
 namespace ace_button {
 
@@ -72,7 +72,7 @@ void LadderButtonConfig::checkButtons() const {
 }
 
 uint8_t LadderButtonConfig::getVirtualPin() const {
-  uint16_t level = analogRead(mPin);
+  uint16_t level = gpio_get_level((gpio_num_t)mPin);
   return extractIndex(mNumLevels, mLevels, level);
 }
 

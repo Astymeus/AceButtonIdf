@@ -26,6 +26,8 @@ SOFTWARE.
 #define ACE_BUTTON_ENCODED_8TO3_BUTTON_CONFIG_H
 
 #include "ButtonConfig.h"
+#define HIGH 0x1
+#define LOW  0x0
 
 namespace ace_button {
 
@@ -77,9 +79,9 @@ class Encoded8To3ButtonConfig : public ButtonConfig {
      * virtual pin was pushed.
      */
     int readButton(uint8_t pin) override {
-      int s0 = digitalRead(mPin0);
-      int s1 = digitalRead(mPin1);
-      int s2 = digitalRead(mPin2);
+      int s0 = gpio_get_level((gpio_num_t)mPin0);
+      int s1 = gpio_get_level((gpio_num_t)mPin1);
+      int s2 = gpio_get_level((gpio_num_t)mPin2);
 
       // Convert the actual pins states into a binary number which becomes
       // the encoded virtual pin numbers of the buttons.

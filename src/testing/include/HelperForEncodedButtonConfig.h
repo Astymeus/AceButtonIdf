@@ -25,9 +25,9 @@ SOFTWARE.
 #ifndef ACE_BUTTON_HELPER_FOR_ENCODED_BUTTON_CONFIG_H
 #define ACE_BUTTON_HELPER_FOR_ENCODED_BUTTON_CONFIG_H
 
-#include <AceButton.h>
-#include <ace_button/testing/TestableEncodedButtonConfig.h>
-#include <ace_button/testing/EventTracker.h>
+#include <../include/AceButton.h>
+#include <TestableEncodedButtonConfig.h>
+#include <EventTracker.h>
 
 namespace ace_button {
 namespace testing {

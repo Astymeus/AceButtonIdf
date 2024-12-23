@@ -22,8 +22,8 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#include "EncodedButtonConfig.h"
-#include "AceButton.h"
+#include "include/EncodedButtonConfig.h"
+#include "include/AceButton.h"
 
 namespace ace_button {
 
@@ -65,7 +65,7 @@ uint8_t EncodedButtonConfig::getVirtualPin() const {
   uint8_t virtualPin = 0;
   for (uint8_t i = 0; i < mNumPins; i++) {
     uint8_t pin = mPins[i];
-    int s = digitalRead(pin);
+    int s = gpio_get_level((gpio_num_t)pin);
     virtualPin |= (s == mPressedState) << i;
   }
   return virtualPin;

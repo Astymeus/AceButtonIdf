@@ -25,7 +25,7 @@ SOFTWARE.
 #ifndef ACE_BUTTON_TESTABLE_BUTTON_CONFIG_H
 #define ACE_BUTTON_TESTABLE_BUTTON_CONFIG_H
 
-#include "../ButtonConfig.h"
+#include "../include/ButtonConfig.h"
 
 namespace ace_button {
 namespace testing {

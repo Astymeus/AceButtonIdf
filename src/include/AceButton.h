@@ -25,8 +25,18 @@ SOFTWARE.
 #ifndef ACE_BUTTON_ACE_BUTTON_H
 #define ACE_BUTTON_ACE_BUTTON_H
 
-#include <Arduino.h>
+#include "IEventHandler.h"
 #include "ButtonConfig.h"
+#include "Encoded8To3ButtonConfig.h"
+#include "Encoded4To2ButtonConfig.h"
+#include "EncodedButtonConfig.h"
+#include "LadderButtonConfig.h"
+
+// Version format: xxyyzz == "xx.yy.zz"
+#define ACE_BUTTON_VERSION 11001
+#define ACE_BUTTON_VERSION_STRING "1.10.1"
+#define HIGH 0x1
+#define LOW  0x0
 
 namespace ace_button {
 
@@ -121,7 +131,7 @@ class AceButton {
      * help debugging. If this function is not used, the underlying table of
      * strings will not be compiled into the resulting binary.
      */
-    static __FlashStringHelper* eventName(uint8_t event);
+    static const char* eventName(uint8_t event);
 
     /**
      * Constructor defines parameters of the button that changes from button to
@@ -393,7 +403,7 @@ class AceButton {
      * used. Return false if buttonState should be ignored until debouncing
      * phase is complete.
      */
-    bool checkDebounced(uint16_t now, uint8_t buttonState);
+    bool checkDebounced(int64_t now, uint8_t buttonState);
 
     /**
      * Return true if the button was already initialzed and determined to be in
@@ -404,34 +414,34 @@ class AceButton {
     bool checkInitialized(uint16_t buttonState);
 
     /** Categorize the button event. */
-    void checkEvent(uint16_t now, uint8_t buttonState);
+    void checkEvent(int64_t now, uint8_t buttonState);
 
     /** Check for a long press event and dispatch to event handler. */
-    void checkLongPress(uint16_t now, uint8_t buttonState);
+    void checkLongPress(int64_t now, uint8_t buttonState);
 
     /** Check for a repeat press event and dispatch to event handler. */
-    void checkRepeatPress(uint16_t now, uint8_t buttonState);
+    void checkRepeatPress(int64_t now, uint8_t buttonState);
 
     /** Check for onChange event and check for Press or Release events. */
-    void checkChanged(uint16_t now, uint8_t buttonState);
+    void checkChanged(int64_t now, uint8_t buttonState);
 
     /**
      * Check for Released and Click events and dispatch to respective
      * handlers.
      */
-    void checkReleased(uint16_t now, uint8_t buttonState);
+    void checkReleased(int64_t now, uint8_t buttonState);
 
     /** Check for Pressed event and dispatch to handler. */
-    void checkPressed(uint16_t now, uint8_t buttonState);
+    void checkPressed(int64_t now, uint8_t buttonState);
 
     /** Check for a single click event and dispatch to handler. */
-    void checkClicked(uint16_t now);
+    void checkClicked(int64_t now);
 
     /**
      * Check for a double click event and dispatch to handler. Return true if
      * double click detected.
      */
-    void checkDoubleClicked(uint16_t now);
+    void checkDoubleClicked(int64_t now);
 
     /**
      * Check for an orphaned click that did not generate a double click and
@@ -441,16 +451,16 @@ class AceButton {
      * the 'lastClickTime', we'd still need this function to prevent a rollover
      * of the 32-bit number in 49.7 days.
      */
-    void checkOrphanedClick(uint16_t now);
+    void checkOrphanedClick(int64_t now);
 
     /**
      * Check if a click message has been postponed because of
      * ButtonConfig::kFeatureSuppressClickBeforeDoubleClick.
      */
-    void checkPostponedClick(uint16_t now);
+    void checkPostponedClick(int64_t now);
 
     /** Check if a heart beat should be sent. */
-    void checkHeartBeat(uint16_t now);
+    void checkHeartBeat(int64_t now);
 
     /**
      * Dispatch to the event handler defined in the mButtonConfig.
@@ -528,11 +538,11 @@ class AceButton {
     // Internal states of the button debouncing and event handling.
     // NOTE: We don't keep track of the lastDoubleClickTime, because we
     // don't support a TripleClicked event. That may change in the future.
-    uint16_t mLastDebounceTime; // ms
-    uint16_t mLastClickTime; // ms
-    uint16_t mLastPressTime; // ms
-    uint16_t mLastRepeatPressTime; // ms
-    uint16_t mLastHeartBeatTime; // ms
+    int64_t mLastDebounceTime; // ms
+    int64_t mLastClickTime; // ms
+    int64_t mLastPressTime; // ms
+    int64_t mLastRepeatPressTime; // ms
+    int64_t mLastHeartBeatTime; // ms
 };
 
 }

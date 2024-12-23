@@ -25,7 +25,8 @@ SOFTWARE.
 #ifndef ACE_BUTTON_BUTTON_CONFIG_H
 #define ACE_BUTTON_BUTTON_CONFIG_H
 
-#include <Arduino.h>
+#include "esp_timer.h"
+#include "driver/gpio.h"
 #include "IEventHandler.h"
 
 // https://stackoverflow.com/questions/295120
@@ -69,7 +70,7 @@ class ButtonConfig {
     //
     // Note that the timing constants are stored as uint16_t (2
     // bytes) instead of unsigned long (4 bytes) which is the type returned by
-    // the millis() system method. It turns out that we can store and perform
+    // the esp_timer_get_time() system method. It turns out that we can store and perform
     // all timing calculations using uint16_t without ill effect, as long as the
     // polling of AceButton::check() happens more frequently than the rollover
     // time of a uint16_t (i.e. 65.536 seconds) and certain precautions (e.g.
@@ -80,25 +81,25 @@ class ButtonConfig {
     // time of an 'unsigned long' (i.e. 49.7 days).
 
     /** Default milliseconds returned by getDebounceDelay(). */
-    static const uint16_t kDebounceDelay = 20;
+    static const int64_t kDebounceDelay = 20;
 
     /** Default milliseconds returned by getClickDelay(). */
-    static const uint16_t kClickDelay = 200;
+    static const int64_t kClickDelay = 200;
 
     /** Default milliseconds returned by getDoubleClickDelay(). */
-    static const uint16_t kDoubleClickDelay = 400;
+    static const int64_t kDoubleClickDelay = 400;
 
     /** Default milliseconds returned by getLongPressDelay(). */
-    static const uint16_t kLongPressDelay = 1000;
+    static const int64_t kLongPressDelay = 1000;
 
     /** Default milliseconds returned by getRepeatPressDelay(). */
-    static const uint16_t kRepeatPressDelay = 1000;
+    static const int64_t kRepeatPressDelay = 1000;
 
     /** Default milliseconds returned by getRepeatPressInterval(). */
-    static const uint16_t kRepeatPressInterval = 200;
+    static const int64_t kRepeatPressInterval = 200;
 
     /** Default milliseconds returned by getHeartBeatInterval(). */
-    static const uint16_t kHeartBeatInterval = 5000;
+    static const int64_t kHeartBeatInterval = 5000;
 
     // Various features controlled by feature flags.
 
@@ -218,77 +219,77 @@ class ButtonConfig {
       virtual ~ButtonConfig() = default;
     #endif
 
-    /** Milliseconds to wait for debouncing. */
-    uint16_t getDebounceDelay() const { return mDebounceDelay; }
+    /** milliseconds to wait for debouncing. */
+    int64_t getDebounceDelay() const { return mDebounceDelay; }
 
-    /** Milliseconds to wait for a possible click. */
-    uint16_t getClickDelay() const { return mClickDelay; }
+    /** milliseconds to wait for a possible click. */
+    int64_t getClickDelay() const { return mClickDelay; }
 
     /**
-     * Milliseconds between the first and second click to register as a
+     * milliseconds between the first and second click to register as a
      * double-click.
      */
-    uint16_t getDoubleClickDelay() const {
+    int64_t getDoubleClickDelay() const {
       return mDoubleClickDelay;
     }
 
-    /** Milliseconds for a long press event. */
-    uint16_t getLongPressDelay() const {
+    /** milliseconds for a long press event. */
+    int64_t getLongPressDelay() const {
       return mLongPressDelay;
     }
 
     /**
-     * Milliseconds that a button needs to be Pressed down before the start of
+     * milliseconds that a button needs to be Pressed down before the start of
      * the sequence of RepeatPressed events. The first event will fire as soon
      * as this delay has passed. Subsequent events will fire after
      * getRepeatPressInterval() time.
      */
-    uint16_t getRepeatPressDelay() const {
+    int64_t getRepeatPressDelay() const {
       return mRepeatPressDelay;
     }
 
-    /** Milliseconds between two successive RepeatPressed events. */
-    uint16_t getRepeatPressInterval() const {
+    /** milliseconds between two successive RepeatPressed events. */
+    int64_t getRepeatPressInterval() const {
       return mRepeatPressInterval;
     }
 
-    /** Milliseconds between two successive HeartBeat events. */
-    uint16_t getHeartBeatInterval() const {
+    /** milliseconds between two successive HeartBeat events. */
+    int64_t getHeartBeatInterval() const {
       return mHeartBeatInterval;
     }
 
     /** Set the debounceDelay milliseconds */
-    void setDebounceDelay(uint16_t debounceDelay) {
+    void setDebounceDelay(int64_t debounceDelay) {
       mDebounceDelay = debounceDelay;
     }
 
     /** Set the clickDelay milliseconds */
-    void setClickDelay(uint16_t clickDelay) {
+    void setClickDelay(int64_t clickDelay) {
       mClickDelay = clickDelay;
     }
 
     /** Set the doubleClickDelay milliseconds */
-    void setDoubleClickDelay(uint16_t doubleClickDelay) {
+    void setDoubleClickDelay(int64_t doubleClickDelay) {
       mDoubleClickDelay = doubleClickDelay;
     }
 
     /** Set the longPressDelay milliseconds */
-    void setLongPressDelay(uint16_t longPressDelay) {
+    void setLongPressDelay(int64_t longPressDelay) {
       mLongPressDelay = longPressDelay;
     }
 
     /** Set the repeatPressDelay milliseconds */
-    void setRepeatPressDelay(uint16_t repeatPressDelay) {
+    void setRepeatPressDelay(int64_t repeatPressDelay) {
       mRepeatPressDelay = repeatPressDelay;
     }
 
     /** Set the repeatPressInterval milliseconds */
-    void setRepeatPressInterval(uint16_t repeatPressInterval) {
+    void setRepeatPressInterval(int64_t repeatPressInterval) {
       mRepeatPressInterval = repeatPressInterval;
     }
 
     /** Set the heartBeatInterval milliseconds */
-    void setHeartBeatInterval(uint16_t heartBeatInterval) {
+    void setHeartBeatInterval(int64_t heartBeatInterval) {
       mHeartBeatInterval = heartBeatInterval;
     }
 
@@ -298,13 +299,13 @@ class ButtonConfig {
 
     /**
      * Return the milliseconds of the internal clock. Override to use something
-     * other than millis(). The return type is 'unsigned long' instead of
-     * uint16_t because that's the return type of millis().
+     * other than esp_timer_get_time(). The return type is 'unsigned long' instead of
+     * uint16_t because that's the return type of esp_timer_get_time().
      *
      * Note: This should have been a const function. I cannot change it now
      * without breaking backwards compatibility.
      */
-    virtual unsigned long getClock() { return millis(); }
+    virtual int64_t getClock() { return esp_timer_get_time()/1000; }
 
     /**
      * Return the HIGH or LOW state of the button. Override to use something
@@ -315,7 +316,7 @@ class ButtonConfig {
      * without breaking backwards compatibility.
      */
     virtual int readButton(uint8_t pin) {
-      return digitalRead(pin);
+      return gpio_get_level((gpio_num_t)pin);
     }
 
     // These methods provide access to various feature flags that control the
@@ -430,13 +431,13 @@ class ButtonConfig {
     /** A bit mask flag that activates certain features. */
     FeatureFlagType mFeatureFlags = 0;
 
-    uint16_t mDebounceDelay = kDebounceDelay;
-    uint16_t mClickDelay = kClickDelay;
-    uint16_t mDoubleClickDelay = kDoubleClickDelay;
-    uint16_t mLongPressDelay = kLongPressDelay;
-    uint16_t mRepeatPressDelay = kRepeatPressDelay;
-    uint16_t mRepeatPressInterval = kRepeatPressInterval;
-    uint16_t mHeartBeatInterval = kHeartBeatInterval;
+    int64_t mDebounceDelay = kDebounceDelay;
+    int64_t mClickDelay = kClickDelay;
+    int64_t mDoubleClickDelay = kDoubleClickDelay;
+    int64_t mLongPressDelay = kLongPressDelay;
+    int64_t mRepeatPressDelay = kRepeatPressDelay;
+    int64_t mRepeatPressInterval = kRepeatPressInterval;
+    int64_t mHeartBeatInterval = kHeartBeatInterval;
 };
 
 }

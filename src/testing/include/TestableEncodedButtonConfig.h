@@ -25,7 +25,7 @@ SOFTWARE.
 #ifndef ACE_BUTTON_TESTABLE_ENCODED_BUTTON_CONFIG_H
 #define ACE_BUTTON_TESTABLE_ENCODED_BUTTON_CONFIG_H
 
-#include "../EncodedButtonConfig.h"
+#include "../include/EncodedButtonConfig.h"
 
 namespace ace_button {
 namespace testing {
