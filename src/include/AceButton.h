@@ -314,7 +314,7 @@ class AceButton {
      * Version of check() used by EncodedButtonConfig. NOT for public
      * consumption.
      */
-    void checkState(uint8_t buttonState);
+    void checkState(int buttonState);
 
     /**
      * Returns true if the given buttonState represents a 'Released' state for
@@ -331,7 +331,7 @@ class AceButton {
      * because the value of the eventType already encodes this information.
      * This method is provided just in case.
      */
-    bool isReleased(uint8_t buttonState) const {
+    bool isReleased(int buttonState) const {
       return buttonState == getDefaultReleasedState();
     }
 
@@ -403,7 +403,7 @@ class AceButton {
      * used. Return false if buttonState should be ignored until debouncing
      * phase is complete.
      */
-    bool checkDebounced(int64_t now, uint8_t buttonState);
+    bool checkDebounced(int64_t now, int buttonState);
 
     /**
      * Return true if the button was already initialzed and determined to be in
@@ -414,25 +414,25 @@ class AceButton {
     bool checkInitialized(uint16_t buttonState);
 
     /** Categorize the button event. */
-    void checkEvent(int64_t now, uint8_t buttonState);
+    void checkEvent(int64_t now, int buttonState);
 
     /** Check for a long press event and dispatch to event handler. */
-    void checkLongPress(int64_t now, uint8_t buttonState);
+    void checkLongPress(int64_t now, int buttonState);
 
     /** Check for a repeat press event and dispatch to event handler. */
-    void checkRepeatPress(int64_t now, uint8_t buttonState);
+    void checkRepeatPress(int64_t now, int buttonState);
 
     /** Check for onChange event and check for Press or Release events. */
-    void checkChanged(int64_t now, uint8_t buttonState);
+    void checkChanged(int64_t now, int buttonState);
 
     /**
      * Check for Released and Click events and dispatch to respective
      * handlers.
      */
-    void checkReleased(int64_t now, uint8_t buttonState);
+    void checkReleased(int64_t now, int buttonState);
 
     /** Check for Pressed event and dispatch to handler. */
-    void checkPressed(int64_t now, uint8_t buttonState);
+    void checkPressed(int64_t now, int buttonState);
 
     /** Check for a single click event and dispatch to handler. */
     void checkClicked(int64_t now);

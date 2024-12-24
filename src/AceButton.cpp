@@ -114,11 +114,11 @@ uint8_t AceButton::getDefaultReleasedState() const {
 // NOTE: It would be interesting to rewrite the check() method using a Finite
 // State Machine.
 void AceButton::check() {
-  uint8_t buttonState = mButtonConfig->readButton(mPin);
+  int buttonState = mButtonConfig->readButton(mPin);
   checkState(buttonState);
 }
 
-void AceButton::checkState(uint8_t buttonState) {
+void AceButton::checkState(int buttonState) {
   // Retrieve the current time just once and use that in the various checkXxx()
   // functions below. This provides some robustness of the various timing
   // algorithms even if one of the event handlers takes more time than the
@@ -139,7 +139,7 @@ void AceButton::checkState(uint8_t buttonState) {
   }
 }
 
-void AceButton::checkEvent(int64_t now, uint8_t buttonState) {
+void AceButton::checkEvent(int64_t now, int buttonState) {
   // We need to remove orphaned clicks even if just Click is enabled. It is not
   // sufficient to do this for just DoubleClick. That's because it's possible
   // for a Clicked event to be generated, then 65.536 seconds later, the
@@ -168,7 +168,7 @@ void AceButton::checkEvent(int64_t now, uint8_t buttonState) {
   }
 }
 
-bool AceButton::checkDebounced(int64_t now, uint8_t buttonState) {
+bool AceButton::checkDebounced(int64_t now, int buttonState) {
   if (isFlag(kFlagDebouncing)) {
 
     // NOTE: This is a bit tricky. The elapsedTime will be valid even if the
@@ -221,7 +221,7 @@ bool AceButton::checkInitialized(uint16_t buttonState) {
   return false;
 }
 
-void AceButton::checkLongPress(int64_t now, uint8_t buttonState) {
+void AceButton::checkLongPress(int64_t now, int buttonState) {
   if (buttonState == getDefaultReleasedState()) {
     return;
   }
@@ -235,7 +235,7 @@ void AceButton::checkLongPress(int64_t now, uint8_t buttonState) {
   }
 }
 
-void AceButton::checkRepeatPress(int64_t now, uint8_t buttonState) {
+void AceButton::checkRepeatPress(int64_t now, int buttonState) {
   if (buttonState == getDefaultReleasedState()) {
     return;
   }
@@ -260,13 +260,13 @@ void AceButton::checkRepeatPress(int64_t now, uint8_t buttonState) {
   }
 }
 
-void AceButton::checkChanged(int64_t now, uint8_t buttonState) {
+void AceButton::checkChanged(int64_t now, int buttonState) {
   mLastButtonState = buttonState;
   checkPressed(now, buttonState);
   checkReleased(now, buttonState);
 }
 
-void AceButton::checkPressed(int64_t now, uint8_t buttonState) {
+void AceButton::checkPressed(int64_t now, int buttonState) {
   if (buttonState == getDefaultReleasedState()) {
     return;
   }
@@ -277,7 +277,7 @@ void AceButton::checkPressed(int64_t now, uint8_t buttonState) {
   handleEvent(kEventPressed);
 }
 
-void AceButton::checkReleased(int64_t now, uint8_t buttonState) {
+void AceButton::checkReleased(int64_t now, int buttonState) {
   if (buttonState != getDefaultReleasedState()) {
     return;
   }
@@ -327,15 +327,8 @@ void AceButton::checkReleased(int64_t now, uint8_t buttonState) {
 }
 
 void AceButton::checkClicked(int64_t now) {
-  if (!isFlag(kFlagPressed)) {
-    // Not a Click unless the previous state was a Pressed state.
-    // This can happen if the chip was rebooted with the button Pressed. Upon
-    // Release, it shouldn't generated a click, even accidentally due to a
-    // spurious value in mLastPressTime.
-    clearFlag(kFlagClicked);
-    return;
-  }
   int64_t elapsedTime = now - mLastPressTime;
+  printf("checkClicked => mLastPressTime: %lld\n", mLastPressTime);
   printf("checkClicked => elapsedTime: %lld\n", elapsedTime);
   if (elapsedTime >= mButtonConfig->getClickDelay()) {
     clearFlag(kFlagClicked);
